@@ -16,8 +16,17 @@
     "nodemon": "^2.0.19",
     "socket.io": "^4.5.1"
   },
-  "description": "",
   "engines": {
     "node": "16.x"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vanhoan01/ChatServer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vanhoan01/ChatServer/issues"
+  },
+  "homepage": "https://github.com/vanhoan01/ChatServer#readme",
+  "description": ""
 }

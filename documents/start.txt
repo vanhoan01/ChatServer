@@ -1,0 +1,57 @@
+*Install Nodejs and NPM
+
+*Install MongoDB
+
+*Create a Rest API End-Ponit
+npm init
+npm install express
+...code index.js...
+node index
+npm install nodemon
+npx nodemon index
+
+*Connect the MongoDB database using mongoose
+npm install mongoose
+...code index.js...
+sudo service mongod start
+mongo
+npx nodemon index
+...code package.json....
+npm start
+npm run dev
+
+*Create a Rest API
+-Create folder routes
+-Create folder models
+-Add index.js
+npm run dev
+sudo service mongod satrt
+-test api
+
+*Delete, update, add (token)
+
+*Connect the MongoDB Atlas Cluster
+
+*Host your Rest Server(API) on Heroku Cloud
+sudo snap install --classic heroku
+node -version
+-add package.json
+heroku local web
+heroku login
+git remote -v
+npm init
+git remote -v
+heroku create
+git remote -v
+git add .
+git commit -m "heroku deployment"
+git push heroku master
+heroku open
+heroku logs --tail
+
+*Flutter
+-NetworkHandler.dart
+.add http
+.use link heroku
+-Khai bao networkHandler -> su dung
+-Authentication login

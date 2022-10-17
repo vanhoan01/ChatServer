@@ -1,0 +1,12 @@
+remote:        Done: 35.4M
+remote: -----> Launching...
+remote:        Released v3
+remote:        https://enigmatic-crag-66260.herokuapp.com/ deployed to Heroku
+remote:
+remote: This app is using the Heroku-20 stack, however a newer stack is available.
+remote: To upgrade to Heroku-22, see:
+remote: https://devcenter.heroku.com/articles/upgrading-to-the-latest-stack
+remote:
+remote: Verifying deploy... done.
+To https://git.heroku.com/enigmatic-crag-66260.git
+ * [new branch]      master -> master

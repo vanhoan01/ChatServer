@@ -1,0 +1,176 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Try the new cross-platform PowerShell https://aka.ms/pscore6
+
+PS C:\Users\nguye\OneDrive\Documents\ProjectFlutter\ChatServer> npm init
+npm WARN config global `--global`, `--local` are deprecated. Use `--location=global` instead.
+This utility will walk you through creating a package.json file.
+It only covers the most common items, and tries to guess sensible defaults.
+
+See `npm help init` for definitive documentation on these fields
+and exactly what they do.
+
+Use `npm install <pkg>` afterwards to install a package and
+save it as a dependency in the package.json file.
+
+Press ^C at any time to quit.
+package name: (chatserver)
+version: (1.0.0)
+description:
+entry point: (index.js)
+test command:
+git repository:
+keywords:
+author:
+license: (ISC)
+About to write to C:\Users\nguye\OneDrive\Documents\ProjectFlutter\ChatServer\package.json:
+
+{
+  "name": "chatserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "ISC"
+}
+
+
+Is this OK? (yes) yes
+npm notice
+npm notice New minor version of npm available! 8.11.0 -> 8.15.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v8.15.0
+npm notice
+npm WARN config global `--global`, `--local` are deprecated. Use `--location=global` instead.
+
+added 137 packages, and audited 138 packages in 27s
+
+14 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+PS C:\Users\nguye\OneDrive\Documents\ProjectFlutter\ChatServer> node index
+server started
+PS C:\Users\nguye\OneDrive\Documents\ProjectFlutter\ChatServer> npm run dev
+npm WARN config global `--global`, `--local` are deprecated. Use `--location=global` instead.
+
+> chatserver@1.0.0 dev
+> nodemon index
+
+[nodemon] 2.0.19
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching path(s): *.*
+[nodemon] watching extensions: js,mjs,json
+[nodemon] starting `node index index.js`
+server started
+
+ *  History restored 
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+Try the new cross-platform PowerShell https://aka.ms/pscore6
+
+PS C:\Users\nguye\OneDrive\Documents\ProjectFlutter\ChatServer> npm install socket.io
+npm WARN config global `--global`, `--local` are deprecated. Use `--location=global` instead.
+
+up to date, audited 138 packages in 2s
+
+14 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+npm WARN config global `--global`, `--local` are deprecated. Use `--location=global` instead.
+npm ERR! code E404
+npm ERR! 404 Not Found - GET https://registry.npmjs.org/nodenom - Not found
+npm ERR! 404
+npm ERR! 404  'nodenom@*' is not in this registry.
+npm ERR! 404
+npm ERR! 404 Note that you can also install from a
+npm ERR! 404 tarball, folder, http url, or git url.
+npm ERR! A complete log of this run can be found in:
+npm ERR!     C:\Users\nguye\AppData\Local\npm-cache\_logs\2022-07-25T14_21_21_811Z-debug-0.log
+PS C:\Users\nguye\OneDrive\Documents\ProjectFlutter\ChatServer>  npm install socket.io nodemon express
+npm WARN config global `--global`, `--local` are deprecated. Use `--location=global` instead.
+
+up to date, audited 138 packages in 2s
+
+14 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+PS C:\Users\nguye\OneDrive\Documents\ProjectFlutter\ChatServer> npm init
+npm WARN config global `--global`, `--local` are deprecated. Use `--location=global` instead.
+This utility will walk you through creating a package.json file.
+It only covers the most common items, and tries to guess sensible defaults.
+
+See `npm help init` for definitive documentation on these fields
+and exactly what they do.
+
+Use `npm install <pkg>` afterwards to install a package and
+save it as a dependency in the package.json file.
+
+Press ^C at any time to quit.
+package name: (chatserver)
+version: (1.0.0)
+description:
+git repository:
+keywords:
+author:
+license: (ISC)
+About to write to C:\Users\nguye\OneDrive\Documents\ProjectFlutter\ChatServer\package.json:
+
+{
+  "name": "chatserver",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "dev": "nodemon index"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "mongoose": "^6.4.6",
+    "nodemon": "^2.0.19",
+    "socket.io": "^4.5.1"
+  },
+  "devDependencies": {},
+  "description": ""
+}
+
+
+Is this OK? (yes)
+PS C:\Users\nguye\OneDrive\Documents\ProjectFlutter\ChatServer> npm run dev
+npm WARN config global `--global`, `--local` are deprecated. Use `--location=global` instead.
+
+> chatserver@1.0.0 dev
+> nodemon index
+
+[nodemon] 2.0.19
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching path(s): *.*
+[nodemon] watching extensions: js,mjs,json
+[nodemon] starting `node index index.js`
+server started
+[nodemon] restarting due to changes...
+[nodemon] starting `node index index.js`
+server started
+[nodemon] restarting due to changes...
+[nodemon] starting `node index index.js`
+server started
+[nodemon] restarting due to changes...
+[nodemon] starting `node index index.js`
+server started
+connected
+zQ8Yu7mjeoHhUsUZAAAB has joined
+Hello world
+connected
+VW9FTPU1TmK0Uw4hAAAD has joined
+Hello world
+connected
+u4v-RFmNcyaJP5C4AAAF has joined
+Hello world
+^A
