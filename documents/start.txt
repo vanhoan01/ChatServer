@@ -13,8 +13,9 @@ npx nodemon index
 *Connect the MongoDB database using mongoose
 npm install mongoose
 ...code index.js...
-sudo service mongod start
-mongo
+//https://linuxhint.com/run-sudo-command-windows/ install sudo
+sudo service mongod start (current mongosh)
+mongo (current mongosh)
 npx nodemon index
 ...code package.json....
 npm start
@@ -36,8 +37,13 @@ sudo service mongod satrt
 sudo snap install --classic heroku
 node -version
 -add package.json
-heroku local web
+heroku -v
+
+-phải tắt npm run dev
 heroku login
+heroku local
+heroku local web
+
 git remote -v
 npm init
 git remote -v
