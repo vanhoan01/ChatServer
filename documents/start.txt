@@ -41,7 +41,7 @@ heroku -v
 
 -phải tắt npm run dev
 heroku login
-heroku local
+//heroku local
 heroku local web
 
 git remote -v
@@ -49,6 +49,7 @@ npm init
 git remote -v
 heroku create
 git remote -v
+
 git add .
 git commit -m "heroku deployment"
 git push heroku master

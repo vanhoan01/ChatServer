@@ -165,6 +165,26 @@ router.route("/get/conversations").get(middleware.checkToken, (req, res) => {
   );
 });
 
+router
+  .route("/get/relationship/:userName")
+  .get(middleware.checkToken, (req, res) => {
+    User.findOne(
+      {
+        userName: req.decoded.userName,
+        relationship: { $elemMatch: { userName: req.params.userName } },
+      },
+      { "relationship.typeStatus": 1, _id: 0 },
+      (err, result) => {
+        if (err) return res.json({ err: err });
+        if (result == null || !result.relationship.length) {
+          return res.json({ data: [] });
+        } else {
+          return res.json(result.relationship[0].typeStatus);
+        }
+      }
+    );
+  });
+
 router.route("/add/relationship").post(middleware.checkToken, (req, res) => {
   User.findOneAndUpdate(
     { userName: req.decoded.userName },
