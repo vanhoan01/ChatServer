@@ -185,6 +185,25 @@ router
     );
   });
 
+router
+  .route("/checkrelationship/:userName")
+  .get(middleware.checkToken, (req, res) => {
+    User.findOne(
+      {
+        userName: req.decoded.userName,
+        "relationship.userName": req.params.userName,
+      },
+      (err, result) => {
+        if (err) return res.json({ err: err });
+        else if (result == null) {
+          return res.json({ status: false });
+        } else {
+          return res.json({ status: true });
+        }
+      }
+    );
+  });
+
 router.route("/add/relationship").post(middleware.checkToken, (req, res) => {
   User.findOneAndUpdate(
     { userName: req.body.userName },
@@ -200,20 +219,23 @@ router.route("/add/relationship").post(middleware.checkToken, (req, res) => {
   );
 });
 
-// router.route("/update/relationship").post(middleware.checkToken, (req, res) => {
-//   User.findOneAndUpdate(
-//     { userName: req.body.userName },
-//     { $push: { relationship: req.body.relationship } },
-//     (err, user) => {
-//       if (err) return res.status(500).send(err);
-//       const response = {
-//         message: "relationship added successfully updated",
-//         data: user,
-//       };
-//       return res.status(200).send(response);
-//     }
-//   );
-// });
+router.route("/update/relationship").post(middleware.checkToken, (req, res) => {
+  User.updateOne(
+    {
+      userName: req.body.userName,
+      "relationship.userName": req.body.relationship.userName,
+    },
+    { $set: { "relationship.$.typeStatus": req.body.relationship.typeStatus } },
+    (err, user) => {
+      if (err) return res.status(500).send(err);
+      const response = {
+        message: "relationship added successfully updated",
+        data: user,
+      };
+      return res.status(200).send(response);
+    }
+  );
+});
 
 router.route("/update").patch(middleware.checkToken, (req, res) => {
   let profile = {};
