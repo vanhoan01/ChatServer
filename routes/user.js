@@ -57,7 +57,7 @@ const upload = multer({
 router
   .route("/add/image")
   .patch(middleware.checkToken, upload.single("img"), (req, res) => {
-    Profile.findOneAndUpdate(
+    User.findOneAndUpdate(
       { userName: req.decoded.userName },
       {
         $set: {
@@ -101,8 +101,8 @@ router.route("/register").post((req, res) => {
     });
 });
 
-router.route("/checkProfile").get(middleware.checkToken, (req, res) => {
-  Profile.findOne({ userName: req.decoded.userName }, (err, result) => {
+router.route("/checkUser").get(middleware.checkToken, (req, res) => {
+  User.findOne({ userName: req.decoded.userName }, (err, result) => {
     if (err) return res.json({ err: err });
     else if (result == null) {
       return res.json({ status: false });
@@ -113,12 +113,12 @@ router.route("/checkProfile").get(middleware.checkToken, (req, res) => {
 });
 
 router.route("/getData").get(middleware.checkToken, (req, res) => {
-  Profile.findOne({ userName: req.decoded.userName }, (err, result) => {
+  User.findOne({ userName: req.decoded.userName }, (err, result) => {
     if (err) return res.json({ err: err });
     if (result == null) {
       return res.json({ data: [] });
     } else {
-      return res.json({ data: result });
+      return res.json(result);
     }
   });
 });
@@ -171,13 +171,13 @@ router
     User.findOne(
       {
         userName: req.decoded.userName,
-        relationship: { $elemMatch: { userName: req.params.userName } },
       },
+      { relationship: { $elemMatch: { userName: req.params.userName } } },
       { "relationship.typeStatus": 1, _id: 0 },
       (err, result) => {
         if (err) return res.json({ err: err });
         if (result == null || !result.relationship.length) {
-          return res.json({ data: [] });
+          return res.json("Kết bạn");
         } else {
           return res.json(result.relationship[0].typeStatus);
         }
@@ -187,7 +187,7 @@ router
 
 router.route("/add/relationship").post(middleware.checkToken, (req, res) => {
   User.findOneAndUpdate(
-    { userName: req.decoded.userName },
+    { userName: req.body.userName },
     { $push: { relationship: req.body.relationship } },
     (err, user) => {
       if (err) return res.status(500).send(err);
@@ -200,9 +200,24 @@ router.route("/add/relationship").post(middleware.checkToken, (req, res) => {
   );
 });
 
+// router.route("/update/relationship").post(middleware.checkToken, (req, res) => {
+//   User.findOneAndUpdate(
+//     { userName: req.body.userName },
+//     { $push: { relationship: req.body.relationship } },
+//     (err, user) => {
+//       if (err) return res.status(500).send(err);
+//       const response = {
+//         message: "relationship added successfully updated",
+//         data: user,
+//       };
+//       return res.status(200).send(response);
+//     }
+//   );
+// });
+
 router.route("/update").patch(middleware.checkToken, (req, res) => {
   let profile = {};
-  Profile.findOne({ userName: req.decoded.userName }, (err, result) => {
+  User.findOne({ userName: req.decoded.userName }, (err, result) => {
     if (err) {
       profile = {};
     }
@@ -210,7 +225,7 @@ router.route("/update").patch(middleware.checkToken, (req, res) => {
       profile = result;
     }
   });
-  Profile.findOneAndUpdate(
+  User.findOneAndUpdate(
     { userName: req.decoded.userName },
     {
       $set: {
