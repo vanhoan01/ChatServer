@@ -87,6 +87,16 @@ router.route("/get/messages").post(middleware.checkToken, (req, res) => {
       return res.json({ data: result });
     });
 });
+router.route("/get/messagesgroup").post(middleware.checkToken, (req, res) => {
+  ChatMessage.find({
+    partition: req.body.partition,
+  })
+    .sort({ timestamp: -1 })
+    .exec((err, result) => {
+      if (err) return res.json({ err: err });
+      return res.json({ data: result });
+    });
+});
 
 router.route("/delete/:id").delete(middleware.checkToken, (req, res) => {
   User.findOneAndDelete({ id: req.params.id }, (err, result) => {
@@ -107,6 +117,25 @@ router
         $or: [
           { author: req.decoded.userName, partition: req.params.partition },
           { author: req.params.partition, partition: req.decoded.userName },
+        ],
+      },
+      { _id: 0 }
+    )
+      .sort({ timestamp: -1 })
+      .limit(1)
+      .exec((err, result) => {
+        if (err) return res.json({ err: err });
+        return res.json(result);
+      });
+  });
+router
+  .route("/get/lastmesagegroup/:partition")
+  .get(middleware.checkToken, (req, res) => {
+    ChatMessage.findOne(
+      {
+        $or: [
+          { partition: req.params.partition },
+          { author: req.params.partition },
         ],
       },
       { _id: 0 }

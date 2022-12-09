@@ -76,6 +76,17 @@ router
     );
   });
 
+router.route("/get/image/:userName").get(middleware.checkToken, (req, res) => {
+  Chatter.findOne({ userName: req.params.userName }, (err, result) => {
+    if (err) return res.json({ err: err });
+    if (result == null) {
+      return res.json("");
+    } else {
+      return res.json(result.avatarImage);
+    }
+  });
+});
+
 router.route("/register").post((req, res) => {
   console.log("inside the register");
   const user = new User({
