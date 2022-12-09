@@ -10,26 +10,13 @@ const router = express.Router();
 router.route("/add").post((req, res) => {
   const conversation = new Conversation({
     displayName: req.body.displayName,
+    avatarImage: req.body.avatarImage,
     unreadCount: req.body.unreadCount,
     members: req.body.members,
   });
   conversation
     .save()
     .then((result) => {
-      // result.members.forEach((element) => {
-      //   User.findOneAndUpdate(
-      //     { userName: element.userName },
-      //     {
-      //       $push: {
-      //         conversations: result._id,
-      //       },
-      //     },
-      //     (err, result) => {
-      //       if (err) return res.status(500).json({ msg: err });
-      //       return res.json({ msg: "conversation successfully updated" });
-      //     }
-      //   );
-      // });
       var users = [];
       result.members.forEach((element) => {
         users.push(element.userName);
@@ -46,7 +33,7 @@ router.route("/add").post((req, res) => {
           // return res.json(user);
         }
       );
-      return res.json({ id: result._id });
+      return res.json({ data: result });
     })
     .catch((err) => {
       res.status(403).json({ msg: err });

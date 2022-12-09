@@ -57,11 +57,9 @@ io.on("connection", (socket) => {
 });
 
 data = {
-  msg: "Welcome on DevStack Blog App development YouTube video series",
+  msg: "Welcome on Chat App",
   info: "This is a root endpoint",
-  Working: "Documentations of other endpoints will be release soon :)",
-  request:
-    "Hey if you did'nt subscribed my YouTube channle please subscribe it",
+  Working: "Documentations of other endpoints will be release soon",
 };
 
 app.route("/").get((req, res) => res.json(data));

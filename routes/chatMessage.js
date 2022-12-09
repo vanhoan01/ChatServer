@@ -99,22 +99,24 @@ router.route("/delete/:id").delete(middleware.checkToken, (req, res) => {
   });
 });
 
-router.route("/get/lastmesage").post(middleware.checkToken, (req, res) => {
-  ChatMessage.find(
-    {
-      $or: [
-        { author: req.decoded.userName, partition: req.body.partition },
-        { author: req.body.partition, partition: req.decoded.userName },
-      ],
-    },
-    { _id: 0 }
-  )
-    .sort({ timestamp: -1 })
-    .limit(1)
-    .exec((err, result) => {
-      if (err) return res.json({ err: err });
-      return res.json(result);
-    });
-});
+router
+  .route("/get/lastmesage/:partition")
+  .get(middleware.checkToken, (req, res) => {
+    ChatMessage.findOne(
+      {
+        $or: [
+          { author: req.decoded.userName, partition: req.params.partition },
+          { author: req.params.partition, partition: req.decoded.userName },
+        ],
+      },
+      { _id: 0 }
+    )
+      .sort({ timestamp: -1 })
+      .limit(1)
+      .exec((err, result) => {
+        if (err) return res.json({ err: err });
+        return res.json(result);
+      });
+  });
 
 module.exports = router;
