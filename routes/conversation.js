@@ -8,7 +8,6 @@ const router = express.Router();
 // npm install jsonwebtoken
 
 router.route("/add").post((req, res) => {
-  console.log("inside the register");
   const conversation = new Conversation({
     displayName: req.body.displayName,
     unreadCount: req.body.unreadCount,
@@ -17,20 +16,37 @@ router.route("/add").post((req, res) => {
   conversation
     .save()
     .then((result) => {
+      // result.members.forEach((element) => {
+      //   User.findOneAndUpdate(
+      //     { userName: element.userName },
+      //     {
+      //       $push: {
+      //         conversations: result._id,
+      //       },
+      //     },
+      //     (err, result) => {
+      //       if (err) return res.status(500).json({ msg: err });
+      //       return res.json({ msg: "conversation successfully updated" });
+      //     }
+      //   );
+      // });
+      var users = [];
       result.members.forEach((element) => {
-        User.findOneAndUpdate(
-          { userName: element.userName },
-          {
-            $push: {
-              conversations: result._id,
-            },
-          },
-          (err, result) => {
-            if (err) return res.status(500).json({ msg: err });
-            return res.json({ msg: "conversation successfully updated" });
-          }
-        );
+        users.push(element.userName);
       });
+      User.updateMany(
+        { userName: { $in: users } },
+        {
+          $push: {
+            conversations: result._id,
+          },
+        },
+        (err) => {
+          if (err) return res.status(500).json({ msg: err });
+          // return res.json(user);
+        }
+      );
+      return res.json({ id: result._id });
     })
     .catch((err) => {
       res.status(403).json({ msg: err });

@@ -144,6 +144,30 @@ router.route("/get/chatters").get(middleware.checkToken, (req, res) => {
   );
 });
 
+router.route("/get/friends").get(middleware.checkToken, (req, res) => {
+  User.findOne(
+    { userName: req.decoded.userName },
+    { relationship: 1, _id: 0 },
+    (err, result) => {
+      if (err) return res.json({ err: err });
+      if (result == null) {
+        return res.json({ data: [] });
+      } else {
+        const unfilter = Object.values(result.relationship).filter(
+          (rs) => rs.typeStatus === "Bạn bè"
+        );
+        const un = unfilter.map((x) => x.userName);
+        Chatter.find({ userName: { $in: un } }, { _id: 0 }).exec(
+          async (err, result) => {
+            if (err) return res.json({ err: err });
+            return res.json({ data: result });
+          }
+        );
+      }
+    }
+  );
+});
+
 router.route("/get/conversations").get(middleware.checkToken, (req, res) => {
   User.findOne(
     { userName: req.decoded.userName },
