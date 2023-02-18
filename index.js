@@ -2,7 +2,7 @@ const express = require("express");
 var http = require("http");
 const port = process.env.PORT || 5000;
 const app = express();
-
+//npm run dev
 var server = http.createServer(app);
 var io = require("socket.io")(server);
 const mongoose = require("mongoose");
@@ -44,6 +44,7 @@ app.use("/chatmessage", chatMessageRoute);
 io.on("connection", (socket) => {
   console.log("connected");
   console.log(socket.id, "has joined");
+  // socket.join("abc_group");
   socket.on("signin", (id) => {
     console.log(id);
     clients[id] = socket;
@@ -51,6 +52,8 @@ io.on("connection", (socket) => {
   });
   socket.on("message", (msg) => {
     console.log(msg);
+    // console.log('msg', msg, {...msg, sourceId: 'othermsg'});
+    // io.to("abc_group").emit("sendMsgServer", { ...msg, sourceId: "otherMsg" });
     let targetId = msg.targetId;
     if (clients[targetId]) clients[targetId].emit("message", msg);
   });

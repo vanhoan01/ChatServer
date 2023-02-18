@@ -27,6 +27,19 @@ const ChatMessage = Schema({
     type: Date,
     default: Date.now,
   },
+  reacts: [
+    {
+      userName: {
+        type: String,
+        required: true,
+      },
+      react: {
+        type: String,
+        default: "love",
+      },
+    },
+  ],
 });
 
 module.exports = mongoose.model("ChatMessage", ChatMessage);
+//love, haha, wow, sad, angry

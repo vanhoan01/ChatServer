@@ -171,7 +171,11 @@ router.route("/get/friends").get(middleware.checkToken, (req, res) => {
         Chatter.find({ userName: { $in: un } }, { _id: 0 }).exec(
           async (err, result) => {
             if (err) return res.json({ err: err });
-            return res.json({ data: result });
+            const updatedArray = result.map((element) => ({
+              ...element._doc,
+              isGroup: false,
+            }));
+            return res.json({ data: updatedArray });
           }
         );
       }
