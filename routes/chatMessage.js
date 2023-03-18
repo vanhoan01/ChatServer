@@ -59,9 +59,10 @@ router.route("/add").post((req, res) => {
     author: req.body.author,
     partition: req.body.partition,
     isGroup: req.body.isGroup,
+    type: req.body.type,
     text: req.body.text,
-    image: req.body.image,
     timestamp: req.body.timestamp,
+    reply: req.body.reply,
   });
   chatMessage
     .save()
@@ -87,6 +88,14 @@ router.route("/get/messages").post(middleware.checkToken, (req, res) => {
       return res.json({ data: result });
     });
 });
+
+router.route("/get/messageid/:id").get(middleware.checkToken, (req, res) => {
+  ChatMessage.findById({ _id: req.params.id }, (err, result) => {
+    if (err) return res.json({ err: err });
+    return res.json(result);
+  });
+});
+
 router.route("/get/messagesgroup").post(middleware.checkToken, (req, res) => {
   ChatMessage.find({
     partition: req.body.partition,
@@ -96,6 +105,51 @@ router.route("/get/messagesgroup").post(middleware.checkToken, (req, res) => {
       if (err) return res.json({ err: err });
       return res.json({ data: result });
     });
+});
+
+router.route("/add/reacts").post(middleware.checkToken, (req, res) => {
+  ChatMessage.findOneAndUpdate(
+    { _id: req.body.id },
+    { $push: { reacts: req.body.react } },
+    (err, user) => {
+      if (err) return res.status(500).send(err);
+      const response = {
+        message: "reacts added successfully updated",
+        data: user,
+      };
+      return res.status(200).send(response);
+    }
+  );
+});
+
+router.route("/delete/reacts").post(middleware.checkToken, (req, res) => {
+  ChatMessage.findOneAndUpdate(
+    { _id: req.body.id },
+    { $pull: { reacts: { userId: req.body.userId } } },
+    (err, user) => {
+      if (err) return res.status(500).send(err);
+      const response = {
+        message: "reacts delete successfully updated",
+        data: user,
+      };
+      return res.status(200).send(response);
+    }
+  );
+});
+
+router.route("/update/reacts").post(middleware.checkToken, (req, res) => {
+  ChatMessage.updateOne(
+    { _id: req.body.id, "reacts.userId": req.body.userId },
+    { $set: { "reacts.$.react": req.body.react } },
+    (err, user) => {
+      if (err) return res.status(500).send(err);
+      const response = {
+        message: "reacts update successfully updated",
+        data: user,
+      };
+      return res.status(200).send(response);
+    }
+  );
 });
 
 router.route("/delete/:id").delete(middleware.checkToken, (req, res) => {
@@ -128,6 +182,7 @@ router
         return res.json(result);
       });
   });
+
 router
   .route("/get/lastmesagegroup/:partition")
   .get(middleware.checkToken, (req, res) => {

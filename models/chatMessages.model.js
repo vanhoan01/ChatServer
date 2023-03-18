@@ -15,11 +15,11 @@ const ChatMessage = Schema({
     type: Boolean,
     default: false,
   },
-  text: {
+  type: {
     type: String,
-    default: "",
+    default: "text",
   },
-  image: {
+  text: {
     type: String,
     default: "",
   },
@@ -27,18 +27,25 @@ const ChatMessage = Schema({
     type: Date,
     default: Date.now,
   },
-  reacts: [
-    {
-      userName: {
-        type: String,
-        required: true,
+  reacts: {
+    type: [
+      {
+        userId: {
+          type: String,
+          required: true,
+        },
+        react: {
+          type: String,
+          default: "love",
+        },
       },
-      react: {
-        type: String,
-        default: "love",
-      },
-    },
-  ],
+    ],
+    default: [],
+  },
+  reply: {
+    type: String,
+    default: "",
+  },
 });
 
 module.exports = mongoose.model("ChatMessage", ChatMessage);

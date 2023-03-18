@@ -276,6 +276,101 @@ router.route("/update/relationship").post(middleware.checkToken, (req, res) => {
   );
 });
 
+router
+  .route("/update/diplayname/:displayName")
+  .get(middleware.checkToken, (req, res) => {
+    User.findOneAndUpdate(
+      {
+        userName: req.decoded.userName,
+      },
+      { $set: { displayName: req.params.displayName } },
+      (err, user) => {
+        if (err) return res.status(500).send(err);
+        const response = {
+          message: "DisplayName successfully updated",
+          data: user,
+        };
+        return res.status(200).send(response);
+      }
+    );
+  });
+
+router
+  .route("/update/avatarimage/:avatarImage")
+  .get(middleware.checkToken, (req, res) => {
+    User.findOneAndUpdate(
+      {
+        userName: req.decoded.userName,
+      },
+      { $set: { avatarImage: req.params.avatarImage } },
+      (err, user) => {
+        if (err) return res.status(500).send(err);
+        const response = {
+          message: "AvatarImage successfully updated",
+          data: user,
+        };
+        return res.status(200).send(response);
+      }
+    );
+  });
+
+router
+  .route("/update/chatid/:chatID")
+  .get(middleware.checkToken, (req, res) => {
+    User.findOneAndUpdate(
+      {
+        userName: req.decoded.userName,
+      },
+      { $set: { userName: req.params.chatID } },
+      (err, user) => {
+        if (err) return res.status(500).send(err);
+        let token = jwt.sign({ userName: req.params.chatID }, config.key, {
+          // expiresIn: "24h"
+        });
+        res.json({
+          token: token,
+          msg: "UserName successfully updated",
+        });
+      }
+    );
+  });
+
+router
+  .route("/update/biography/:biography")
+  .get(middleware.checkToken, (req, res) => {
+    User.findOneAndUpdate(
+      {
+        userName: req.decoded.userName,
+      },
+      { $set: { biography: req.params.biography } },
+      (err, user) => {
+        if (err) return res.status(500).send(err);
+        const response = {
+          message: "Biography successfully updated",
+          data: user,
+        };
+        return res.status(200).send(response);
+      }
+    );
+  });
+
+router.route("/update/link/:link").get(middleware.checkToken, (req, res) => {
+  User.findOneAndUpdate(
+    {
+      userName: req.decoded.userName,
+    },
+    { $set: { link: req.params.link } },
+    (err, user) => {
+      if (err) return res.status(500).send(err);
+      const response = {
+        message: "Link successfully updated",
+        data: user,
+      };
+      return res.status(200).send(response);
+    }
+  );
+});
+
 router.route("/update").patch(middleware.checkToken, (req, res) => {
   let profile = {};
   User.findOne({ userName: req.decoded.userName }, (err, result) => {

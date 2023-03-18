@@ -24,6 +24,7 @@ const User = Schema({
     type: String,
     default: "",
   },
+  biography: String,
   lastSeenAt: Date,
   phoneNumber: {
     type: String,
@@ -40,6 +41,7 @@ const User = Schema({
     type: String,
     default: "Không hoạt động",
   },
+  link: String,
 });
 
 module.exports = mongoose.model("User", User);

@@ -1,6 +1,6 @@
 const express = require("express");
 var http = require("http");
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 50000;
 const app = express();
 //npm run dev
 var server = http.createServer(app);
@@ -25,8 +25,13 @@ connection.once("open", () => {
 //middLewre
 app.use(express.json());
 var clients = {};
+
 const imageRoute = require("./routes/image");
 app.use("/image", imageRoute);
+
+const fileRoute = require("./routes/file");
+app.use("/file", fileRoute);
+
 app.use("/uploads", express.static("uploads"));
 
 const userRoute = require("./routes/user");
@@ -56,6 +61,9 @@ io.on("connection", (socket) => {
     // io.to("abc_group").emit("sendMsgServer", { ...msg, sourceId: "otherMsg" });
     let targetId = msg.targetId;
     if (clients[targetId]) clients[targetId].emit("message", msg);
+  });
+  socket.on("disconnect", () => {
+    console.log(socket.id, "disconnect"); // undefined
   });
 });
 
