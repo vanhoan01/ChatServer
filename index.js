@@ -1,6 +1,6 @@
 const express = require("express");
 var http = require("http");
-const port = process.env.PORT || 50000;
+const port = process.env.PORT || 60000;
 const app = express();
 //npm run dev
 var server = http.createServer(app);
@@ -32,6 +32,9 @@ app.use("/image", imageRoute);
 const fileRoute = require("./routes/file");
 app.use("/file", fileRoute);
 
+const audioRoute = require("./routes/audio");
+app.use("/audio", audioRoute);
+
 app.use("/uploads", express.static("uploads"));
 
 const userRoute = require("./routes/user");
@@ -49,18 +52,22 @@ app.use("/chatmessage", chatMessageRoute);
 io.on("connection", (socket) => {
   console.log("connected");
   console.log(socket.id, "has joined");
+  // clients[socket.id] = socket;
+  // console.log("clients[targetId]", clients[socket.id]);
   // socket.join("abc_group");
   socket.on("signin", (id) => {
-    console.log(id);
+    console.log(id, "signin");
     clients[id] = socket;
-    console.log(clients);
+    console.log("clients", clients);
   });
   socket.on("message", (msg) => {
-    console.log(msg);
+    console.log("message", msg);
     // console.log('msg', msg, {...msg, sourceId: 'othermsg'});
     // io.to("abc_group").emit("sendMsgServer", { ...msg, sourceId: "otherMsg" });
     let targetId = msg.targetId;
-    if (clients[targetId]) clients[targetId].emit("message", msg);
+    console.log("clients[targetId]", clients[targetId]);
+    // if (clients[targetId]) clients[targetId].emit("message", msg);
+    socket.emit("message", msg);
   });
   socket.on("disconnect", () => {
     console.log(socket.id, "disconnect"); // undefined

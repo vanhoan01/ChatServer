@@ -140,4 +140,17 @@ router.route("/delete/:username").delete(middleware.checkToken, (req, res) => {
   });
 });
 
+router
+  .route("/get/chatter/:userName")
+  .get(middleware.checkToken, (req, res) => {
+    Chatter.findOne({ userName: req.params.userName }, (err, result) => {
+      if (err) return res.json({ err: err });
+      if (result == null) {
+        return res.json({ data: [] });
+      } else {
+        return res.json(result);
+      }
+    });
+  });
+
 module.exports = router;

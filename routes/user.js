@@ -371,6 +371,23 @@ router.route("/update/link/:link").get(middleware.checkToken, (req, res) => {
   );
 });
 
+router.route("/saved/add/:idmes").get(middleware.checkToken, (req, res) => {
+  User.findOneAndUpdate(
+    {
+      userName: req.decoded.userName,
+    },
+    { $set: { saved: req.params.idmes } },
+    (err, user) => {
+      if (err) return res.status(500).send(err);
+      const response = {
+        message: "saved successfully add",
+        data: user,
+      };
+      return res.status(200).send(response);
+    }
+  );
+});
+
 router.route("/update").patch(middleware.checkToken, (req, res) => {
   let profile = {};
   User.findOne({ userName: req.decoded.userName }, (err, result) => {

@@ -42,6 +42,7 @@ const User = Schema({
     default: "Không hoạt động",
   },
   link: String,
+  saved: [String],
 });
 
 module.exports = mongoose.model("User", User);

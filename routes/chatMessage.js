@@ -1,6 +1,7 @@
 const express = require("express");
 const config = require("../config");
 const ChatMessage = require("../models/chatMessages.model");
+const User = require("../models/users.model");
 const jwt = require("jsonwebtoken");
 const middleware = require("../middleware");
 const router = express.Router();
@@ -61,6 +62,7 @@ router.route("/add").post((req, res) => {
     isGroup: req.body.isGroup,
     type: req.body.type,
     text: req.body.text,
+    size: req.body.size,
     timestamp: req.body.timestamp,
     reply: req.body.reply,
   });
@@ -87,6 +89,77 @@ router.route("/get/messages").post(middleware.checkToken, (req, res) => {
       if (err) return res.json({ err: err });
       return res.json({ data: result });
     });
+});
+
+router.route("/get/photos").get(middleware.checkToken, (req, res) => {
+  User.findOne({ userName: req.decoded.userName }, (err, result) => {
+    // if (err) return res.json({ err: err });
+    ChatMessage.find({
+      $and: [
+        {
+          $or: [
+            { author: req.decoded.userName },
+            { partition: req.decoded.userName },
+            { partition: { $in: result["conversations"] } },
+          ],
+          $or: [{ type: "image" }, { type: "video" }],
+        },
+      ],
+    })
+      .sort({ timestamp: -1 })
+      .exec((err, result) => {
+        if (err) return res.json({ err: err });
+        return res.json({ data: result });
+      });
+  });
+});
+
+router.route("/get/saveds").get(middleware.checkToken, (req, res) => {
+  User.findOne({ userName: req.decoded.userName }, (err, result) => {
+    // if (err) return res.json({ err: err });
+    ChatMessage.find({
+      _id: { $in: result["saved"] },
+    })
+      .sort({ timestamp: -1 })
+      .exec((err, result) => {
+        if (err) return res.json({ err: err });
+        return res.json({ data: result });
+      });
+  });
+});
+
+router.route("/get/files").get(middleware.checkToken, (req, res) => {
+  User.findOne({ userName: req.decoded.userName }, (err, result) => {
+    // if (err) return res.json({ err: err });
+    ChatMessage.find({
+      $and: [
+        {
+          $or: [
+            { author: req.decoded.userName },
+            { partition: req.decoded.userName },
+            { partition: { $in: result["conversations"] } },
+          ],
+        },
+        { type: "file" },
+      ],
+    })
+      .sort({ timestamp: -1 })
+      .exec((err, result) => {
+        if (err) return res.json({ err: err });
+        return res.json({ data: result });
+      });
+  });
+});
+
+router.route("/get/profilereacts").get(middleware.checkToken, (req, res) => {
+  User.findOne({ userName: req.decoded.userName }, (err, result) => {
+    ChatMessage.find({ "reacts.userId": result._id })
+      .sort({ timestamp: -1 })
+      .exec((err, result) => {
+        if (err) return res.json({ err: err });
+        return res.json({ data: result });
+      });
+  });
 });
 
 router.route("/get/messageid/:id").get(middleware.checkToken, (req, res) => {

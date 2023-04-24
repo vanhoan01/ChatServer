@@ -23,9 +23,10 @@ const ChatMessage = Schema({
     type: String,
     default: "",
   },
+  size: Number,
   timestamp: {
     type: Date,
-    default: Date.now,
+    default: Date.now(),
   },
   reacts: {
     type: [
