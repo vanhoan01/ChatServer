@@ -1,4 +1,5 @@
 const express = require("express");
+// const User = require("routers/user.model");
 var http = require("http");
 const port = process.env.PORT || 60000;
 const app = express();
@@ -6,6 +7,7 @@ const app = express();
 var server = http.createServer(app);
 var io = require("socket.io")(server);
 const mongoose = require("mongoose");
+const User = require("./models/users.model");
 
 mongoose
   .connect(
@@ -49,28 +51,71 @@ app.use("/conversation", conversationRoute);
 const chatMessageRoute = require("./routes/chatMessage");
 app.use("/chatmessage", chatMessageRoute);
 
+const callRoute = require("./routes/call");
+app.use("/call", callRoute);
+
 io.on("connection", (socket) => {
-  console.log("connected");
-  console.log(socket.id, "has joined");
-  // clients[socket.id] = socket;
-  // console.log("clients[targetId]", clients[socket.id]);
-  // socket.join("abc_group");
   socket.on("signin", (id) => {
     console.log(id, "signin");
     clients[id] = socket;
-    console.log("clients", clients);
+    // console.log(clients);
   });
+
   socket.on("message", (msg) => {
-    console.log("message", msg);
-    // console.log('msg', msg, {...msg, sourceId: 'othermsg'});
-    // io.to("abc_group").emit("sendMsgServer", { ...msg, sourceId: "otherMsg" });
-    let targetId = msg.targetId;
-    console.log("clients[targetId]", clients[targetId]);
-    // if (clients[targetId]) clients[targetId].emit("message", msg);
-    socket.emit("message", msg);
+    console.log("msg: ", msg);
+    var boardws = clients[msg.partition]; //check if there is reciever connection
+    if (boardws) {
+      console.log("Có user: ", msg.partition);
+      boardws.emit("message", msg);
+      console.log("đã gửi về: ", msg.partition);
+    } else {
+      console.log("No reciever user found.");
+    }
   });
+
+  socket.on("activecontacts", (userName) => {
+    console.log("activecontacts ", userName);
+    User.findOne(
+      { userName: userName },
+      { relationship: 1, _id: 0 },
+      (err, result) => {
+        if (err) console.log(err);
+        if (result == null) {
+          console.log({ data: [] });
+        } else {
+          const unfilter = Object.values(result.relationship).filter(
+            (rs) => rs.typeStatus === "Bạn bè"
+          );
+          const un = unfilter.map((x) => x.userName);
+          User.find({ userName: { $in: un } }, { _id: 0 }).exec(
+            async (err, result) => {
+              if (err) console.log({ err: err });
+              const updatedArray = result.map((element) => ({
+                ...element._doc,
+                isGroup: false,
+              }));
+              console.log("updatedArray ", updatedArray);
+              console.log("Object.keys(clients) ", Object.keys(clients));
+              const arr = updatedArray.filter((ele) =>
+                Object.keys(clients).includes(ele["userName"])
+              );
+
+              // return res.json({ data: arr });
+              var boardws = clients[userName];
+              boardws.emit("activecontacts", arr);
+              console.log("activecontacts ", arr.length);
+            }
+          );
+        }
+      }
+    );
+  });
+
   socket.on("disconnect", () => {
-    console.log(socket.id, "disconnect"); // undefined
+    var key = Object.keys(clients).find((key) => clients[key].id === socket.id);
+    console.log("User Disconnected: ", key);
+    delete clients[key];
+    console.log(clients);
   });
 });
 

@@ -9,6 +9,7 @@ const middleware = require("../middleware");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
+var clients = {};
 // npm install jsonwebtoken
 router.route("/login").post((req, res) => {
   User.findOne({ userName: req.body.userName }, (err, result) => {
@@ -175,6 +176,11 @@ router.route("/get/friends").get(middleware.checkToken, (req, res) => {
               ...element._doc,
               isGroup: false,
             }));
+
+            // const arr = updatedArray.filter((ele) =>
+            //   Index.clients.includes(ele.userName)
+            // );
+            // console.log(Object.keys(Index.clients));
             return res.json({ data: updatedArray });
           }
         );
