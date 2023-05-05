@@ -10,26 +10,23 @@ const router = express.Router();
 router.route("/rtctoken").post(middleware.checkToken, (req, res) => {
   const appID = "fc5fd6a4dc284209955a8d448ac503f7";
   const appCertificate = "bbb6a26ec5de4fc5a861c01050c48adf";
-  const expirationTimeInSeconds = 3600;
+  const expirationTimeInSeconds = 3600 * 24;
   const uid = Math.floor(Math.random() * 100000);
-  const role = req.body.isPublisher
-    ? Agora.RtcRole.PUBLISHER
-    : Agora.RtcRole.SUBSCRIBER;
-  const channel = req.body.channel;
+  const role = Agora.RtcRole.PUBLISHER;
   const currentTimestamp = Math.floor(Date.now() / 1000);
   const expirationTimestamp = currentTimestamp + expirationTimeInSeconds;
 
-  const token = Agora.RtcTokenBuilder.buildTokenWithUid(
+  const token = Agora.RtcTokenBuilder.buildTokenWithAccount(
     appID,
     appCertificate,
-    channel,
-    null,
+    req.body.channelName,
+    req.body.account,
     role,
-    null
+    expirationTimestamp
   );
-  console.log("channel: ", channel);
+  console.log("channel: ", req.body.channelName);
   console.log("token: ", token);
-  return res.json({ uid: uid, token: token });
+  return res.json(token);
 });
 
 module.exports = router;
