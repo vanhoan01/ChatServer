@@ -73,6 +73,20 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("calling", (caller, creceiver) => {
+    //caller
+    //receiver
+    console.log("Calling to: ", creceiver);
+    var boardws = clients[creceiver]; //check if there is reciever connection
+    if (boardws) {
+      console.log("Có user: ", creceiver);
+      boardws.emit("calling", [caller, creceiver]);
+      console.log("Nhận Called: ", [caller, creceiver]);
+    } else {
+      console.log("No reciever user found.");
+    }
+  });
+
   socket.on("activecontacts", (userName) => {
     console.log("activecontacts ", userName);
     User.findOne(
@@ -115,7 +129,7 @@ io.on("connection", (socket) => {
     var key = Object.keys(clients).find((key) => clients[key].id === socket.id);
     console.log("User Disconnected: ", key);
     delete clients[key];
-    console.log(clients);
+    // console.log(clients);
   });
 });
 
