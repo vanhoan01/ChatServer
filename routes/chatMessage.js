@@ -68,9 +68,13 @@ router.route("/add").post((req, res) => {
   });
   chatMessage
     .save()
-    .then(() => {
+    .then((_id) => {
       console.log("chatmessage add");
-      res.status(200).json("ok");
+      const response = {
+        message: "chatmessage add",
+        data: _id,
+      };
+      return res.status(200).send(response);
     })
     .catch((err) => {
       res.status(403).json({ msg: err });
@@ -82,6 +86,25 @@ router.route("/get/messages").post(middleware.checkToken, (req, res) => {
     $or: [
       { author: req.decoded.userName, partition: req.body.partition },
       { author: req.body.partition, partition: req.decoded.userName },
+    ],
+  })
+    .sort({ timestamp: -1 })
+    .exec((err, result) => {
+      if (err) return res.json({ err: err });
+      return res.json({ data: result });
+    });
+});
+
+router.route("/get/calls").get(middleware.checkToken, (req, res) => {
+  ChatMessage.find({
+    $and: [
+      {
+        $or: [
+          { author: req.decoded.userName },
+          { partition: req.decoded.userName },
+        ],
+      },
+      { $or: [{ type: "Video call" }, { type: "Audio call" }] },
     ],
   })
     .sort({ timestamp: -1 })
@@ -225,11 +248,26 @@ router.route("/update/reacts").post(middleware.checkToken, (req, res) => {
   );
 });
 
+router.route("/updatecallend").post(middleware.checkToken, (req, res) => {
+  ChatMessage.updateOne(
+    { _id: req.body.id },
+    { $set: { size: req.body.size } },
+    (err, user) => {
+      if (err) return res.status(500).send(err);
+      const response = {
+        message: "reacts update successfully updated",
+        data: user,
+      };
+      return res.status(200).send(response);
+    }
+  );
+});
+
 router.route("/delete/:id").delete(middleware.checkToken, (req, res) => {
-  User.findOneAndDelete({ id: req.params.id }, (err, result) => {
+  ChatMessage.findOneAndDelete({ _id: req.params.id }, (err, result) => {
     if (err) return res.status(500).json({ msg: err });
     const msg = {
-      msg: "Conversation deleted",
+      msg: "ChatMessage deleted",
       username: req.params.id,
     };
     return res.json(msg);

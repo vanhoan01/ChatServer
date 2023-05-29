@@ -12,23 +12,30 @@ const path = require("path");
 var clients = {};
 // npm install jsonwebtoken
 router.route("/login").post((req, res) => {
-  User.findOne({ userName: req.body.userName }, (err, result) => {
-    if (err) return res.status(500).json({ msg: err });
-    if (result === null) {
-      res.status(403).json("Username incorrect");
+  User.findOne(
+    {
+      $or: [
+        { userName: req.body.userName },
+        { phoneNumber: req.body.userName },
+      ],
+    },
+    (err, result) => {
+      if (err) return res.status(500).json({ msg: err });
+      if (result == null) {
+        return res.status(403).json("Username or PhoneNumber incorrect");
+      } else if (result.password == req.body.password) {
+        let token = jwt.sign({ userName: req.body.userName }, config.key, {
+          // expiresIn: "24h"
+        });
+        return res.json({
+          token: token,
+          msg: "success",
+        });
+      } else {
+        return res.status(403).json("password is incorrect");
+      }
     }
-    if (result.password == req.body.password) {
-      let token = jwt.sign({ userName: req.body.userName }, config.key, {
-        // expiresIn: "24h"
-      });
-      res.json({
-        token: token,
-        msg: "success",
-      });
-    } else {
-      res.status(403).json("password is incorrect");
-    }
-  });
+  );
 });
 
 const storage = multer.diskStorage({
@@ -124,6 +131,28 @@ router.route("/checkUser").get(middleware.checkToken, (req, res) => {
   });
 });
 
+router.route("/checkphonenumber/:phonenumber").get((req, res) => {
+  User.findOne({ phoneNumber: req.params.phonenumber }, (err, result) => {
+    if (err) return res.json({ err: err });
+    if (result == null) {
+      return res.json({ status: false });
+    } else {
+      return res.json({ status: true });
+    }
+  });
+});
+
+router.route("/checkusername/:username").get((req, res) => {
+  User.findOne({ userName: req.params.username }, (err, result) => {
+    if (err) return res.json({ err: err });
+    if (result == null) {
+      return res.json({ status: false });
+    } else {
+      return res.json({ status: true });
+    }
+  });
+});
+
 router.route("/getData").get(middleware.checkToken, (req, res) => {
   User.findOne({ userName: req.decoded.userName }, (err, result) => {
     if (err) return res.json({ err: err });
@@ -181,6 +210,34 @@ router.route("/get/friends").get(middleware.checkToken, (req, res) => {
             //   Index.clients.includes(ele.userName)
             // );
             // console.log(Object.keys(Index.clients));
+            return res.json({ data: updatedArray });
+          }
+        );
+      }
+    }
+  );
+});
+
+router.route("/get/friendrequests").get(middleware.checkToken, (req, res) => {
+  User.findOne(
+    { userName: req.decoded.userName },
+    { relationship: 1, _id: 0 },
+    (err, result) => {
+      if (err) return res.json({ err: err });
+      if (result == null) {
+        return res.json({ data: [] });
+      } else {
+        const unfilter = Object.values(result.relationship).filter(
+          (rs) => rs.typeStatus === "Friend Request"
+        );
+        const un = unfilter.map((x) => x.userName);
+        Chatter.find({ userName: { $in: un } }, { _id: 0 }).exec(
+          async (err, result) => {
+            if (err) return res.json({ err: err });
+            const updatedArray = result.map((element) => ({
+              ...element._doc,
+              isGroup: false,
+            }));
             return res.json({ data: updatedArray });
           }
         );

@@ -8,6 +8,7 @@ var server = http.createServer(app);
 var io = require("socket.io")(server);
 const mongoose = require("mongoose");
 const User = require("./models/users.model");
+const Chatter = require("./models/chatster.model");
 
 mongoose
   .connect(
@@ -58,6 +59,33 @@ io.on("connection", (socket) => {
   socket.on("signin", (id) => {
     console.log(id, "signin");
     clients[id] = socket;
+    User.updateOne(
+      {
+        userName: id,
+      },
+      { $set: { precense: "Hoạt động" } },
+      (err) => {
+        if (err) console.log(err);
+      }
+    );
+    User.updateOne(
+      {
+        userName: id,
+      },
+      { $set: { precense: "Hoạt động" } },
+      (err) => {
+        if (err) console.log(err);
+      }
+    );
+    Chatter.updateOne(
+      {
+        userName: id,
+      },
+      { $set: { precense: "Hoạt động" } },
+      (err) => {
+        if (err) console.log(err);
+      }
+    );
     // console.log(clients);
   });
 
@@ -129,6 +157,24 @@ io.on("connection", (socket) => {
     var key = Object.keys(clients).find((key) => clients[key].id === socket.id);
     console.log("User Disconnected: ", key);
     delete clients[key];
+    User.updateOne(
+      {
+        userName: key,
+      },
+      { $set: { precense: "Không hoạt động" } },
+      (err) => {
+        if (err) console.log(err);
+      }
+    );
+    Chatter.updateOne(
+      {
+        userName: key,
+      },
+      { $set: { precense: "Không hoạt động" } },
+      (err) => {
+        if (err) console.log(err);
+      }
+    );
     // console.log(clients);
   });
 });
