@@ -1,7 +1,7 @@
 const express = require("express");
 // const User = require("routers/user.model");
 var http = require("http");
-const port = process.env.PORT || 60000;
+const port = process.env.PORT || 50000;
 const app = express();
 //npm run dev
 var server = http.createServer(app);
@@ -58,7 +58,10 @@ app.use("/call", callRoute);
 io.on("connection", (socket) => {
   socket.on("signin", (id) => {
     console.log(id, "signin");
+
     clients[id] = socket;
+    // delete clients[key];
+    console.log(clients);
     User.updateOne(
       {
         userName: id,

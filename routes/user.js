@@ -218,6 +218,45 @@ router.route("/get/friends").get(middleware.checkToken, (req, res) => {
   );
 });
 
+router
+  .route("/suggestionssearch")
+  .get(middleware.checkToken, async (req, res) => {
+    const user = await User.findOne(
+      { userName: req.decoded.userName },
+      { relationship: 1, conversations: 1, _id: 0 }
+    );
+    if (user == null) {
+      console.log("no user");
+    }
+    // return res.json({ data: user });
+    //friend
+    const friend = Object.values(user.relationship).filter(
+      (rs) => rs.typeStatus === "Bạn bè"
+    );
+    const un = friend.map((x) => x.userName);
+    const chatter = await Chatter.find({ userName: { $in: un } }, { _id: 0 });
+    var updatedChatter = chatter.map((element) => ({
+      ...element._doc,
+      isGroup: false,
+    }));
+    //group
+    var conversation = [];
+    if (!user.conversations.length) {
+      conversation = [];
+    } else {
+      conversation = await Conversation.find({
+        _id: { $in: user.conversations },
+      });
+    }
+    var updatedConversation = conversation.map((element) => ({
+      ...element._doc,
+      userName: element._id,
+      isGroup: true,
+    }));
+    var suggestionsSearch = updatedChatter.concat(updatedConversation);
+    return res.json({ data: suggestionsSearch });
+  });
+
 router.route("/get/friendrequests").get(middleware.checkToken, (req, res) => {
   User.findOne(
     { userName: req.decoded.userName },

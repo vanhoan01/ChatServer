@@ -137,6 +137,39 @@ router.route("/get/photos").get(middleware.checkToken, (req, res) => {
   });
 });
 
+router
+  .route("/get/otherphotos/:username")
+  .get(middleware.checkToken, (req, res) => {
+    console.log(req.decoded.userName);
+    console.log(req.params.username);
+    ChatMessage.find({
+      $and: [
+        {
+          $or: [
+            {
+              $and: [
+                { author: req.decoded.userName },
+                { partition: req.params.username },
+              ],
+            },
+            {
+              $and: [
+                { author: req.params.username },
+                { partition: req.decoded.userName },
+              ],
+            },
+          ],
+        },
+        { $or: [{ type: "image" }, { type: "video" }] },
+      ],
+    })
+      .sort({ timestamp: -1 })
+      .exec((err, result) => {
+        if (err) return res.json({ err: err });
+        return res.json({ data: result });
+      });
+  });
+
 router.route("/get/saveds").get(middleware.checkToken, (req, res) => {
   User.findOne({ userName: req.decoded.userName }, (err, result) => {
     // if (err) return res.json({ err: err });
@@ -173,6 +206,40 @@ router.route("/get/files").get(middleware.checkToken, (req, res) => {
       });
   });
 });
+
+router
+  .route("/get/otherfiles/:username")
+  .get(middleware.checkToken, (req, res) => {
+    User.findOne({ userName: req.decoded.userName }, (err, result) => {
+      // if (err) return res.json({ err: err });
+      ChatMessage.find({
+        $and: [
+          {
+            $or: [
+              {
+                $and: [
+                  { author: req.decoded.userName },
+                  { partition: req.params.username },
+                ],
+              },
+              {
+                $and: [
+                  { author: req.params.username },
+                  { partition: req.decoded.userName },
+                ],
+              },
+            ],
+          },
+          { type: "file" },
+        ],
+      })
+        .sort({ timestamp: -1 })
+        .exec((err, result) => {
+          if (err) return res.json({ err: err });
+          return res.json({ data: result });
+        });
+    });
+  });
 
 router.route("/get/profilereacts").get(middleware.checkToken, (req, res) => {
   User.findOne({ userName: req.decoded.userName }, (err, result) => {
