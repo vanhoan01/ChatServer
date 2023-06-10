@@ -32,6 +32,9 @@ var clients = {};
 const imageRoute = require("./routes/image");
 app.use("/image", imageRoute);
 
+const videoRoute = require("./routes/video");
+app.use("/video", videoRoute);
+
 const fileRoute = require("./routes/file");
 app.use("/file", fileRoute);
 
@@ -61,7 +64,7 @@ io.on("connection", (socket) => {
 
     clients[id] = socket;
     // delete clients[key];
-    console.log(clients);
+    // console.log(clients);
     User.updateOne(
       {
         userName: id,

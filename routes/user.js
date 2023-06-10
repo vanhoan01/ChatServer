@@ -257,6 +257,104 @@ router
     return res.json({ data: suggestionsSearch });
   });
 
+router
+  .route("/statistical/:day")
+  .get(middleware.checkToken, async (req, res) => {
+    const chatCountNew = await ChatMessage.count({
+      timestamp: {
+        $gte: new Date(
+          new Date().setDate(new Date().getDate() - req.params.day)
+        ),
+        $lt: new Date(),
+      },
+    });
+
+    const chatCountOld = await ChatMessage.count({
+      timestamp: {
+        $gte: new Date(
+          new Date().setDate(new Date().getDate() - req.params.day * 2)
+        ),
+        $lt: new Date(
+          new Date().setDate(new Date().getDate() - req.params.day)
+        ),
+      },
+    });
+
+    const imageCountNew = await ChatMessage.count({
+      timestamp: {
+        $gte: new Date(
+          new Date().setDate(new Date().getDate() - req.params.day)
+        ),
+        $lt: new Date(),
+      },
+      type: "image",
+    });
+
+    const imageCountOld = await ChatMessage.count({
+      timestamp: {
+        $gte: new Date(
+          new Date().setDate(new Date().getDate() - req.params.day * 2)
+        ),
+        $lt: new Date(
+          new Date().setDate(new Date().getDate() - req.params.day)
+        ),
+      },
+      type: "image",
+    });
+    const videoCountNew = await ChatMessage.count({
+      timestamp: {
+        $gte: new Date(
+          new Date().setDate(new Date().getDate() - req.params.day)
+        ),
+        $lt: new Date(),
+      },
+      type: "video",
+    });
+
+    const videoCountOld = await ChatMessage.count({
+      timestamp: {
+        $gte: new Date(
+          new Date().setDate(new Date().getDate() - req.params.day * 2)
+        ),
+        $lt: new Date(
+          new Date().setDate(new Date().getDate() - req.params.day)
+        ),
+      },
+      type: "video",
+    });
+    const fileCountNew = await ChatMessage.count({
+      timestamp: {
+        $gte: new Date(
+          new Date().setDate(new Date().getDate() - req.params.day)
+        ),
+        $lt: new Date(),
+      },
+      type: "file",
+    });
+
+    const fileCountOld = await ChatMessage.count({
+      timestamp: {
+        $gte: new Date(
+          new Date().setDate(new Date().getDate() - req.params.day * 2)
+        ),
+        $lt: new Date(
+          new Date().setDate(new Date().getDate() - req.params.day)
+        ),
+      },
+      type: "file",
+    });
+    return res.json({
+      chatCountOld,
+      chatCountNew,
+      imageCountOld,
+      imageCountNew,
+      videoCountOld,
+      videoCountNew,
+      fileCountOld,
+      fileCountNew,
+    });
+  });
+
 router.route("/get/friendrequests").get(middleware.checkToken, (req, res) => {
   User.findOne(
     { userName: req.decoded.userName },
@@ -267,7 +365,7 @@ router.route("/get/friendrequests").get(middleware.checkToken, (req, res) => {
         return res.json({ data: [] });
       } else {
         const unfilter = Object.values(result.relationship).filter(
-          (rs) => rs.typeStatus === "Friend Request"
+          (rs) => rs.typeStatus === "Được nhận"
         );
         const un = unfilter.map((x) => x.userName);
         Chatter.find({ userName: { $in: un } }, { _id: 0 }).exec(
@@ -318,7 +416,7 @@ router
       (err, result) => {
         if (err) return res.json({ err: err });
         if (result == null || !result.relationship.length) {
-          return res.json("Kết bạn");
+          return res.json("Người lạ");
         } else {
           return res.json(result.relationship[0].typeStatus);
         }
@@ -388,11 +486,20 @@ router
       { $set: { displayName: req.params.displayName } },
       (err, user) => {
         if (err) return res.status(500).send(err);
-        const response = {
-          message: "DisplayName successfully updated",
-          data: user,
-        };
-        return res.status(200).send(response);
+        Chatter.findOneAndUpdate(
+          {
+            userName: req.decoded.userName,
+          },
+          { $set: { displayName: req.params.displayName } },
+          (err, user) => {
+            if (err) return res.status(500).send(err);
+            const response = {
+              message: "DisplayName successfully updated",
+              data: user,
+            };
+            return res.status(200).send(response);
+          }
+        );
       }
     );
   });
@@ -407,11 +514,20 @@ router
       { $set: { avatarImage: req.params.avatarImage } },
       (err, user) => {
         if (err) return res.status(500).send(err);
-        const response = {
-          message: "AvatarImage successfully updated",
-          data: user,
-        };
-        return res.status(200).send(response);
+        Chatter.findOneAndUpdate(
+          {
+            userName: req.decoded.userName,
+          },
+          { $set: { avatarImage: req.params.avatarImage } },
+          (err, user) => {
+            if (err) return res.status(500).send(err);
+            const response = {
+              message: "AvatarImage successfully updated",
+              data: user,
+            };
+            return res.status(200).send(response);
+          }
+        );
       }
     );
   });
@@ -447,11 +563,20 @@ router
       { $set: { biography: req.params.biography } },
       (err, user) => {
         if (err) return res.status(500).send(err);
-        const response = {
-          message: "Biography successfully updated",
-          data: user,
-        };
-        return res.status(200).send(response);
+        Chatter.findOneAndUpdate(
+          {
+            userName: req.decoded.userName,
+          },
+          { $set: { biography: req.params.biography } },
+          (err, user) => {
+            if (err) return res.status(500).send(err);
+            const response = {
+              message: "Biography successfully updated",
+              data: user,
+            };
+            return res.status(200).send(response);
+          }
+        );
       }
     );
   });
@@ -464,11 +589,20 @@ router.route("/update/link/:link").get(middleware.checkToken, (req, res) => {
     { $set: { link: req.params.link } },
     (err, user) => {
       if (err) return res.status(500).send(err);
-      const response = {
-        message: "Link successfully updated",
-        data: user,
-      };
-      return res.status(200).send(response);
+      Chatter.findOneAndUpdate(
+        {
+          userName: req.decoded.userName,
+        },
+        { $set: { link: req.params.link } },
+        (err, user) => {
+          if (err) return res.status(500).send(err);
+          const response = {
+            message: "Link successfully updated",
+            data: user,
+          };
+          return res.status(200).send(response);
+        }
+      );
     }
   );
 });

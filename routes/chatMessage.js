@@ -125,7 +125,8 @@ router.route("/get/photos").get(middleware.checkToken, (req, res) => {
             { partition: req.decoded.userName },
             { partition: { $in: result["conversations"] } },
           ],
-          $or: [{ type: "image" }, { type: "video" }],
+          // $or: [{ type: "image" }, { type: "video" }],
+          type: { $in: ["image", "video"] },
         },
       ],
     })
